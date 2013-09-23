@@ -151,23 +151,13 @@
 
 #pragma mark - messing around
 - (void)verticalCenterLabel {
-  // NSTextField doesn't vertically center its contents, so we vertically center it
+  // NSTextField doesn't vertically center its contents, so we position it manually
   CGSize sz = [@"Record shortcut" sizeWithAttributes:
                [NSDictionary dictionaryWithObject: [NSFont fontWithName: self.shortcutLabel.font.familyName
                                                                    size: self.shortcutLabel.font.pointSize]
                                            forKey: NSFontAttributeName]];
   NSPoint origin = self.shortcutLabel.frame.origin;
-  origin.y = floor((self.frame.size.height - sz.height * 1.0) / 2);
-
-//  NSLog(@"Vertical center. TextFrame y-pos/height: %0.2f/%0.2f, Font height: %0.2f",
-//        self.shortcutLabel.frame.origin.y,
-//        self.shortcutLabel.frame.size.height,
-//        sz.height);
-//  NSLog(@"Frame top/bottom: %0.2f/%0.2f. Text top/bottom: %0.2f/%0.2f",
-//        self.shortcutLabel.frame.origin.y,
-//        self.shortcutLabel.frame.origin.y + self.shortcutLabel.frame.size.height,
-//        origin.y,
-//        origin.y + sz.height);
+  origin.y = (self.frame.size.height - sz.height) / 2;
   [self.shortcutLabel setFrameOrigin:origin];
 }
 
@@ -184,7 +174,6 @@
 }
 
 - (BOOL)becomeFirstResponder {
-  // TODO: Implement some focus ring stuff
   [self drawFocusRingMask];
   return YES;
 }
@@ -192,11 +181,11 @@
 - (NSBezierPath *)controlShape
 {
   NSRect shapeBounds = self.bounds;
-  //shapeBounds.size.height = ; //_SRRecorderControlHeight - self.alignmentRectInsets.bottom;
-  shapeBounds = NSInsetRect(shapeBounds, 1.0, 1.0);
+  // Stroke will be 1 px, so align shape to pixel centers
+  shapeBounds = NSInsetRect(shapeBounds, 0.5, 0.5);
   return [NSBezierPath bezierPathWithRoundedRect:shapeBounds
-                                         xRadius:self.bounds.size.height/2 //_SRRecorderControlShapeXRadius
-                                         yRadius:self.bounds.size.height/2];//_SRRecorderControlShapeYRadius];
+                                         xRadius:self.bounds.size.height/2
+                                         yRadius:self.bounds.size.height/2];
 }
 
 - (void)drawFocusRingMask
@@ -254,7 +243,7 @@
   [[self controlShape] stroke];
 
   // Show clear button if recording or defined
-  float inset = 4.5;
+  float inset = 4;
   float clearSize = self.shortcutLabel.frame.size.height - inset * 2;
   if (self.shortcutValue || self.recording) {
     CGRect clearRect = CGRectMake(self.shortcutLabel.frame.size.width - (inset + clearSize),
@@ -272,7 +261,7 @@
     [self.shortcutLabel setFont:[NSFont systemFontOfSize:10]];
     [self.shortcutLabel setTextColor:[NSColor disabledControlTextColor]];
   } else {
-    [self.shortcutLabel setFont:[NSFont systemFontOfSize:12]];
+    [self.shortcutLabel setFont:[NSFont systemFontOfSize:11]];
     [self.shortcutLabel setTextColor:[NSColor textColor]];
   }
   NSString *title;
